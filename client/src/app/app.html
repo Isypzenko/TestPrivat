@@ -1,0 +1,21 @@
+<div class="app-container">
+  <mat-toolbar color="primary" class="header">
+    <div class="logo" routerLink="/">
+      <span class="logo-icon"></span>
+      <span class="logo-text">Banner<b>App</b></span>
+    </div>
+    <span class="spacer"></span>
+    <button class="banner-list" mat-raised-button color="accent" routerLink="/">
+      Список банеров
+    </button>
+    <button mat-raised-button color="accent" routerLink="/create">Создать банер</button>
+  </mat-toolbar>
+
+  <main class="content">
+    <router-outlet> </router-outlet>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Управление банерами. Тестовое задание.</p>
+  </footer>
+</div>
