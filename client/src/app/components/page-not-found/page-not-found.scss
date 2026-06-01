@@ -1,0 +1,57 @@
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh; // Центрирует контент по вертикали на экране
+  text-align: center;
+  padding: 24px;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+
+  .error-code {
+    font-size: 96px;
+    font-weight: 700;
+    line-height: 1;
+    color: #3f51b5; // Стандартный primary цвет Angular Material (Indigo)
+    margin-bottom: 16px;
+    letter-spacing: -2px;
+  }
+
+  .error-title {
+    font-size: 28px;
+    font-weight: 500;
+    color: #212121;
+    margin-bottom: 12px;
+  }
+
+  .error-message {
+    font-size: 16px;
+    color: #666;
+    max-width: 400px;
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  // Стилизация самой кнопки Angular Material
+  .back-btn {
+    padding: 8px 24px; // Делаем кнопку чуть более объемной и кликабельной
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    border-radius: 8px; // Слегка скругляем углы для современного вида
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    // Эффект при наведении (микро-взаимодействие)
+    &:hover {
+      transform: translateY(-2px); // Кнопка слегка приподнимается
+      box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3); // Появляется мягкое свечение цвета primary
+    }
+
+    // Эффект при нажатии
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
