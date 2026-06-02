@@ -1,8 +1,21 @@
 <div class="banner-grid">
   @if (isLoading()) {
-    <div class="loading-spinner">
-      <p>Загружаем баннеры...</p>
-    </div>
+    @for (item of [1, 2, 3]; track $index) {
+      <mat-card class="banner-card skeleton-card">
+        <div class="skeleton-image placeholder-shimmer"></div>
+
+        <mat-card-content>
+          <div class="skeleton-line placeholder-shimmer w-70"></div>
+          <div class="skeleton-line placeholder-shimmer w-40"></div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <div class="skeleton-button placeholder-shimmer"></div>
+          <div class="skeleton-button placeholder-shimmer"></div>
+        </mat-card-actions>
+      </mat-card>
+    }
+
   } @else {
     @for (banner of banners; track banner.id) {
       <mat-card [animate.enter]="'banner-enter'" [animate.leave]="'banner-gone'">

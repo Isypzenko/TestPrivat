@@ -16,8 +16,8 @@ const mongoURL = `mongodb+srv://${process.env.USER_DB}:${process.env.PASSWORD_DB
 
 mongoose
   .connect(mongoURL)
-  .then(() => console.log('✅ Успешно: Подключено к MongoDB'))
-  .catch((err) => console.error('❌ Ошибка БД:', err));
+  .then(() => console.log('Успешно: Подключено к MongoDB'))
+  .catch((err) => console.error('Ошибка БД:', err));
 
 app.get('/banners', async (req, res) => {
   const cacheKey = 'banners_list';
@@ -94,7 +94,7 @@ app.post('/banners', async (req, res) => {
 
     const savedDoc = await newBanner.save();
 
-    console.log('✅ Баннер успешно сохранен в БД под ID:', savedDoc._id);
+    console.log('Баннер успешно сохранен в БД под ID:', savedDoc._id);
     bannersCached.delete('banners_list');
     res.status(201).json({
       id: savedDoc._id,
@@ -117,4 +117,4 @@ app.delete('/banners/:id', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`🚀 Сервер летит на порту ${PORT}`));
+app.listen(PORT, () => console.log(`Сервер летит на порту ${PORT}`));

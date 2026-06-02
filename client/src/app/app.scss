@@ -64,3 +64,10 @@ html {
 .spacer {
   flex: 1 1 auto;
 }
+
+@media (max-width: 450px) {
+  .banner-button {
+    font-size: 14px;
+    padding: 5px;
+  }
+}

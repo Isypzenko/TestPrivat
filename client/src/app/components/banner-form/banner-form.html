@@ -16,39 +16,6 @@
           }
         </mat-form-field>
 
-        <!-- <input
-          type="file"
-          #fileInput
-          style="display: none"
-          accept="image/*"
-          (change)="onFileSelected($event)"
-        />
-
-        <div class="file-upload-actions">
-          <button type="button" mat-stroked-button color="primary" (click)="fileInput.click()">
-            <mat-icon>image</mat-icon>
-            {{ imagePreview() ? 'Изменить картинку' : 'Выбрать картинку' }}
-          </button>
-        </div>
-
-        @if (imagePreview()) {
-          <div class="preview-container">
-            <p class="preview-label">Предпросмотр:</p>
-            <div class="image-wrapper">
-              <img [src]="imagePreview()" alt="Preview" />
-              <button
-                type="button"
-                mat-mini-fab
-                color="warn"
-                class="remove-btn"
-                (click)="removeImage()"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-          </div>
-        } -->
-
         <input
           type="file"
           #fileInput
@@ -76,8 +43,10 @@
         @if (imagePreview()) {
           <div class="preview-container">
             <p class="preview-label">Предпросмотр:</p>
+
             <div class="image-wrapper">
               <img [src]="imagePreview()" alt="Preview" />
+
               <button
                 type="button"
                 mat-mini-fab

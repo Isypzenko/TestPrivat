@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-banner-form',
@@ -21,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatSnackBarModule,
   ],
   templateUrl: './banner-form.html',
   styleUrl: './banner-form.scss',
@@ -31,6 +33,16 @@ export class BannerForm implements OnInit {
   private router = inject(Router);
   private bannerService = inject(BannerService);
 
+  private snackBar = inject(MatSnackBar);
+
+  private showError(message: string): void {
+    this.snackBar.open(message, 'Закрыть', {
+      duration: 4000,
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
+  }
+
   public bannerForm: FormGroup = this.fb.group({
     title: ['', [Validators.required]],
     src: ['', [Validators.required]],
@@ -39,6 +51,35 @@ export class BannerForm implements OnInit {
   public imagePreview = signal<string | null>(null);
   public isEditMode = false;
   private bannerId: string | null = null;
+
+  public isDragging = false;
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(): void {
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const mockEvent = {
+        target: {
+          files: files,
+        },
+      } as unknown as Event;
+
+      this.onFileSelected(mockEvent);
+    }
+  }
 
   ngOnInit(): void {
     this.bannerId = this.route.snapshot.paramMap.get('id');
@@ -49,12 +90,19 @@ export class BannerForm implements OnInit {
   }
 
   private loadBannerForEdit(id: string): void {
-    this.bannerService.getBannerById(id).subscribe((banner) => {
-      this.bannerForm.patchValue({
-        title: banner.title,
-        src: banner.src,
-      });
-      this.imagePreview.set(banner.src);
+    this.bannerService.getBannerById(id).subscribe({
+      next: (banner) => {
+        this.bannerForm.patchValue({
+          title: banner.title,
+          src: banner.src,
+        });
+        this.imagePreview.set(banner.src);
+      },
+      error: (err) => {
+        console.error('Ошибка загрузки баннера:', err);
+        this.showError('Не удалось загрузить данные баннера. Возможно, он был удален.');
+        this.router.navigate(['/']);
+      },
     });
   }
 
@@ -90,18 +138,27 @@ export class BannerForm implements OnInit {
       if (this.isEditMode && this.bannerId) {
         this.bannerService.updateBanner(this.bannerId, bannerData).subscribe({
           next: () => {
-            console.log('Банер обновлен');
+            this.snackBar.open('Банер успішно оновлено!', 'ОК', { duration: 3000 });
             this.router.navigate(['/']);
           },
-          error: (err) => console.error('Ошибка обновления:', err),
+          error: (err) => {
+            console.error('Ошибка обновления:', err);
+
+            const msg = err.error?.message || 'Не удалось обновить баннер. Ошибка сервера.';
+            this.showError(msg);
+          },
         });
       } else {
         this.bannerService.createBanner(bannerData).subscribe({
           next: () => {
-            console.log('Банер создан');
+            this.snackBar.open('Банер успешно создан!', 'ОК', { duration: 3000 });
             this.router.navigate(['/']);
           },
-          error: (err) => console.error('Ошибка создания:', err),
+          error: (err) => {
+            console.error('Ошибка создания:', err);
+            const msg = err.error?.message || 'Не удалось сохранить баннер. Проверьте сеть.';
+            this.showError(msg);
+          },
         });
       }
     }
