@@ -138,7 +138,7 @@ export class BannerForm implements OnInit {
       if (this.isEditMode && this.bannerId) {
         this.bannerService.updateBanner(this.bannerId, bannerData).subscribe({
           next: () => {
-            this.snackBar.open('Банер успішно оновлено!', 'ОК', { duration: 3000 });
+            this.snackBar.open('Баннер успешно обновлен!', 'ОК', { duration: 3000 });
             this.router.navigate(['/']);
           },
           error: (err) => {

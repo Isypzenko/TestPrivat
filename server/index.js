@@ -33,7 +33,7 @@ app.get('/banners', async (req, res) => {
       title: banner.title,
       src: banner.src,
     }));
-    bannersCached.set(cacheKey, formattedBanners, 1);
+    bannersCached.set(cacheKey, formattedBanners, 10);
     console.log(`>>> Отправлено баннеров: ${formattedBanners.length}`);
     res.status(200).json(formattedBanners);
   } catch (err) {
