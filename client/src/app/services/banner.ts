@@ -8,8 +8,10 @@ export class BannerService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/banners';
 
-  getBanners(): Observable<Banner[]> {
-    return this.http.get<Banner[]>(this.apiUrl);
+  getBanners(page: number, limit: number): Observable<{ banners: Banner[]; totalItems: number }> {
+    return this.http.get<{ banners: Banner[]; totalItems: number }>(
+      `${this.apiUrl}?page=${page}&limit=${limit}`,
+    );
   }
 
   getBannerById(id: string): Observable<Banner> {

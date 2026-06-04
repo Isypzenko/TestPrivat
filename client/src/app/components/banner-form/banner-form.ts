@@ -110,6 +110,25 @@ export class BannerForm implements OnInit {
     const file = (event.target as HTMLInputElement).files?.[0];
 
     if (file) {
+      const maxSizeInMb = 5;
+      const maxSizeBytes = maxSizeInMb * 1024 * 1024;
+
+      if (file.size > maxSizeBytes) {
+        this.snackBar.open(
+          `Файл занадто великий! Максимальний дозволений розмір: ${maxSizeInMb} МБ.`,
+          'Закрыть',
+          {
+            duration: 4000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+            panelClass: ['error-snackbar'],
+          },
+        );
+
+        this.removeImage();
+        return;
+      }
+
       const reader = new FileReader();
 
       reader.onload = () => {

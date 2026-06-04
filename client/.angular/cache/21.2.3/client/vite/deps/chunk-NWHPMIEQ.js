@@ -3,23 +3,23 @@ import {
   _animationsDisabled,
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader
-} from "./chunk-TVUH4SSL.js";
+} from "./chunk-3N33FKWY.js";
 import {
   _getEventTarget,
   normalizePassiveListenerOptions
-} from "./chunk-UHSXJMA5.js";
-import {
-  coerceElement
-} from "./chunk-ZZKH7R7W.js";
-import {
-  Platform
-} from "./chunk-OVPYTHYB.js";
-import {
-  _CdkPrivateStyleLoader
-} from "./chunk-AHNYSVGR.js";
+} from "./chunk-Q76TJJZG.js";
 import {
   BidiModule
-} from "./chunk-F36YYJGZ.js";
+} from "./chunk-IDN2RLLU.js";
+import {
+  coerceElement
+} from "./chunk-3EFO6UNJ.js";
+import {
+  _CdkPrivateStyleLoader
+} from "./chunk-2GQ4EC5A.js";
+import {
+  Platform
+} from "./chunk-ESGNCSLY.js";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -54,7 +54,7 @@ import {
   ɵɵdomElementStart,
   ɵɵprojection,
   ɵɵprojectionDef
-} from "./chunk-RASZIKMQ.js";
+} from "./chunk-42YN7DCA.js";
 
 // node_modules/@angular/material/fesm2022/_ripple-chunk.mjs
 var RippleState;
@@ -1319,6 +1319,9 @@ var MatButtonModule = class _MatButtonModule {
 })();
 
 export {
+  MatRipple,
+  _StructuralStylesLoader,
+  MatRippleModule,
   MAT_BUTTON_CONFIG,
   MatIconButton,
   MatIconAnchor,
@@ -1331,4 +1334,4 @@ export {
   MatMiniFabAnchor,
   MatButtonModule
 };
-//# sourceMappingURL=chunk-4ZZOIXO4.js.map
+//# sourceMappingURL=chunk-NWHPMIEQ.js.map

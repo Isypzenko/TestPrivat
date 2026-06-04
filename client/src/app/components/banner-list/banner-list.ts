@@ -6,17 +6,29 @@ import { BannerService } from '../../services/banner';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-banner-list',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule, RouterLink, MatSnackBarModule],
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCardModule,
+    RouterLink,
+    MatSnackBarModule,
+    MatPaginator,
+  ],
   templateUrl: './banner-list.html',
   styleUrl: './banner-list.scss',
 })
 export class BannerList implements OnInit {
   public banners: Banner[] = [];
   public isLoading = signal<boolean>(true);
+
+  public totalItems = 0;
+  public pageSize = 3;
+  public currentPage = 0;
 
   private cdr = inject(ChangeDetectorRef);
   private bannerService = inject(BannerService);
@@ -36,20 +48,32 @@ export class BannerList implements OnInit {
 
   loadBanners(): void {
     this.isLoading.set(true);
-    this.bannerService.getBanners().subscribe({
-      next: (data) => {
-        console.log('Получено банеров из БД:', data.length);
-        this.banners = data;
+
+    this.bannerService.getBanners(this.currentPage + 1, this.pageSize).subscribe({
+      next: (res: any) => {
+        console.log(`Получено баннеров: ${res.banners?.length} из общего числа ${res.totalItems}`);
+
+        this.banners = res.banners || [];
+        this.totalItems = res.totalItems || 0;
+
         this.cdr.detectChanges();
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Ошибка загрузки баннеров:', err);
         this.banners = [];
+        this.totalItems = 0;
         this.isLoading.set(false);
         this.showError('Не удалось загрузить список баннеров. Проверьте подключение к серверу.');
       },
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+
+    this.loadBanners();
   }
 
   onDelete(id: string | undefined): void {
@@ -61,15 +85,23 @@ export class BannerList implements OnInit {
     if (confirm('Вы уверены, что хотите удалить этот банер?')) {
       this.bannerService.deleteBanner(id).subscribe({
         next: () => {
-          this.banners = this.banners.filter((b) => b.id !== id);
-          this.cdr.detectChanges();
-          console.log('Банер успешно удален из базы и экрана');
+          console.log('Банер успешно удален из базы');
 
           this.snackBar.open('Баннер успешно удален!', 'ОК', {
             duration: 3000,
             horizontalPosition: 'right',
             verticalPosition: 'top',
           });
+
+          this.totalItems--;
+
+          const maxPages = Math.ceil(this.totalItems / this.pageSize);
+
+          if (this.currentPage >= maxPages && this.currentPage > 0) {
+            this.currentPage--;
+          }
+
+          this.loadBanners();
         },
         error: (err) => {
           console.error('Ошибка при удалении баннера:', err);

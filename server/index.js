@@ -20,27 +20,49 @@ mongoose
   .catch((err) => console.error('Ошибка БД:', err));
 
 app.get('/banners', async (req, res) => {
-  const cacheKey = 'banners_list';
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 6;
+  const skip = (page - 1) * limit;
+
+  const cacheKey = `banners_page_${page}_limit_${limit}`;
+
   const cachedData = bannersCached.get(cacheKey);
   if (cachedData) {
+    console.log(`⚡ [CACHE HIT] Повертаємо дані з кешу для ключа: ${cacheKey}`);
     return res.json(cachedData);
   }
+
   try {
-    const mongoBanners = await Banner.find().sort({ _id: -1 });
+    const [mongoBanners, totalItems] = await Promise.all([
+      Banner.find().sort({ _id: -1 }).skip(skip).limit(limit),
+      Banner.countDocuments(),
+    ]);
 
     const formattedBanners = mongoBanners.map((banner) => ({
       id: banner._id,
       title: banner.title,
       src: banner.src,
     }));
-    bannersCached.set(cacheKey, formattedBanners, 10);
-    console.log(`>>> Отправлено баннеров: ${formattedBanners.length}`);
-    res.status(200).json(formattedBanners);
+
+    const responseData = {
+      banners: formattedBanners,
+      totalItems: totalItems,
+      currentPage: page,
+      totalPages: Math.ceil(totalItems / limit),
+    };
+
+    bannersCached.set(cacheKey, responseData, 10);
+
+    console.log(
+      `📡 [DB QUERY] Дані завантажено з БД. Сторінка: ${page}, Кількість: ${formattedBanners.length}`,
+    );
+    res.status(200).json(responseData);
   } catch (err) {
-    console.error('Ошибка при получении баннеров:', err);
-    res.status(500).json({ message: 'Ошибка сервера при загрузке списка' });
+    console.error('Помилка при отриманні баннерів:', err);
+    res.status(500).json({ message: 'Помилка сервера при загрузке списка' });
   }
 });
+
 app.get('/banners/:id', async (req, res) => {
   try {
     const banner = await Banner.findById(req.params.id);
@@ -71,7 +93,9 @@ app.put('/banners/:id', async (req, res) => {
     if (!updatedBanner) {
       return res.status(404).json({ message: 'Нечего обновлять' });
     }
-    bannersCached.delete('banners_list');
+
+    bannersCached.clearBannersCache();
+
     res.status(200).json({
       id: updatedBanner._id,
       title: updatedBanner.title,
@@ -91,11 +115,11 @@ app.post('/banners', async (req, res) => {
     }
 
     const newBanner = new Banner({ title, src });
-
     const savedDoc = await newBanner.save();
 
     console.log('Баннер успешно сохранен в БД под ID:', savedDoc._id);
-    bannersCached.delete('banners_list');
+    bannersCached.clearBannersCache();
+
     res.status(201).json({
       id: savedDoc._id,
       title: savedDoc.title,
@@ -110,7 +134,7 @@ app.post('/banners', async (req, res) => {
 app.delete('/banners/:id', async (req, res) => {
   try {
     await Banner.findByIdAndDelete(req.params.id);
-    bannersCached.delete('banners_list');
+    bannersCached.clearBannersCache();
     res.status(200).json({ message: 'Deleted' });
   } catch (error) {
     res.status(500).json({ error: 'Delete error' });
